@@ -10,27 +10,32 @@ const Search = React.memo(props => {
     const inputRef = useRef();
 
     useEffect(() => {
-        setTimeout(() => {
-
+        const timer = setTimeout(() => {
+            if (enteredFilter === inputRef.current.value) {
+                console.log('rendering ingredients');
+                const query = enteredFilter.length ===0
+                    ? ''
+                    : `?orderBy="title"&equalTo="${enteredFilter}"`
+                fetch('https://flamelinktest-b9226-default-rtdb.firebaseio.com/ingredients.json' + query)
+                    .then(response => response.json())
+                    .then(responseData => {
+                        const loadedIngredients = [];
+                        for (const key in responseData) {
+                            loadedIngredients.push({
+                                id: key,
+                                title: responseData[key].title,
+                                amount: responseData[key].amount
+                            });
+                        }
+                        onLoadIngredients(loadedIngredients)
+                    })
+            }
         }, 500)
 
-        const query = enteredFilter.length ===0
-            ? ''
-            : `?orderBy="title"&equalTo="${enteredFilter}"`
-        fetch('https://flamelinktest-b9226-default-rtdb.firebaseio.com/ingredients.json' + query)
-            .then(response => response.json())
-            .then(responseData => {
-            const loadedIngredients = [];
-            for (const key in responseData) {
-                loadedIngredients.push({
-                    id: key,
-                    title: responseData[key].title,
-                    amount: responseData[key].amount
-                });
-            }
-            onLoadIngredients(loadedIngredients)
-        })
-    }, [enteredFilter, onLoadIngredients])
+        return () => {
+            clearTimeout(timer)
+        }
+    }, [enteredFilter, onLoadIngredients, inputRef])
 
     return (
         <section className="search">
