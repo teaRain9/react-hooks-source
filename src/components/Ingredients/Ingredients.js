@@ -46,7 +46,7 @@ const Ingredients = () => {
         dispatch({ type: 'SET', ingredients: filteredIngredients });
     }, [])
 
-    const addIngredientHandler = ingredient => {
+    const addIngredientHandler = useCallback(ingredient => {
         dispatchHttp({ type: 'SEND'});
         // setIsLoading(true);
         fetch('https://flamelinktest-b9226-default-rtdb.firebaseio.com/ingredients.json', {
@@ -64,9 +64,9 @@ const Ingredients = () => {
             // ]);
             dispatch({ type: 'ADD', ingredient: {id: responseData.name, ...ingredient}})
         });
-    }
+    },[])
 
-    const removeIngredientHandler = id => {
+    const removeIngredientHandler = useCallback(id => {
         dispatchHttp({ type: 'SEND'})
         // setIsLoading(true);
         fetch(`https://flamelinktest-b9226-default-rtdb.firebaseio.com/ingredients/${id}.json`, {
@@ -81,13 +81,13 @@ const Ingredients = () => {
             dispatchHttp({type: 'ERROR', errorMessage: error.message})
             // setError(error.message)
         });
-    }
+    },[])
 
-    const clearError = () => {
+    const clearError = useCallback(() => {
         // setError(null);
         // setIsLoading(false)
         dispatchHttp({type: 'CLEAR'});
-    }
+    },[])
 
 
     return (
